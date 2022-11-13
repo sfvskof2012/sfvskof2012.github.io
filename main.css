@@ -23,7 +23,8 @@ body{
 /* global styling */
 
 img{
-    width: 100%;
+    width: 75%;
+    height: 100%;
 }
 ul{
     list-style: none;
@@ -105,7 +106,7 @@ hr{
 .banner{
     min-height: auto;
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: 1.5fr;
     align-items: center;
     padding: 30px 0;
     margin-top: 8px;
@@ -117,7 +118,7 @@ hr{
 }
 
 .banner-main-content h2{
-    font-size: 2rem;
+    font-size: 2.5rem;
     font-family: var(--heading);
 }
 
@@ -129,7 +130,7 @@ hr{
     border: none;
     background: #252525;
     padding: 14px 18px;
-    font-size: 1.2rem;
+    font-size: 2.2rem;
     font-family: 'Montserrat', sans-serif;
     transition: background 1s ease;
 }
@@ -156,7 +157,7 @@ hr{
 }
 
 .current-news-head h3{
-    padding: 6px;
+    padding: 12px;
     cursor: pointer;
     position: relative;
 }
@@ -177,9 +178,9 @@ hr{
 .hot-topic{
     overflow: hidden;
     position: relative;
-    width: auto;
+    width: 100%;
     padding: 12px;
-    height: auto;
+    height: 400px;
 }
 
 .hot-topic img{
@@ -257,6 +258,12 @@ main a:hover{
     padding: 30px 10px;
 }
 
+.main-container-left img{
+    width: 500px;
+    height: 500px;
+    align-self: center;
+}
+
 .main-container-left > h2{
     padding: 15px 0 15px 30px;
 }
@@ -282,7 +289,7 @@ main a:hover{
 
 .container-bottom-left{
     background: #f3f3f3;
-    margin: 15px 30px;
+    margin: 35px 30px;
 }
 
 /*** main container right */
@@ -307,8 +314,8 @@ main a:hover{
 }
 
 .main-container-right img{
-    width: 100px;
-    height: 100px;
+    width: 300px;
+    height: 300px;
     align-self: center;
 }
 
