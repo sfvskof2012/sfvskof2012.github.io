@@ -177,9 +177,9 @@ hr{
 .hot-topic{
     overflow: hidden;
     position: relative;
-    width: 100%;
+    width: auto;
     padding: 12px;
-    height: 100%;
+    height: auto;
 }
 
 .hot-topic img{
