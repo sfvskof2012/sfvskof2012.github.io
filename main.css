@@ -23,7 +23,7 @@ body{
 /* global styling */
 
 img{
-    width: 75%;
+    width: 73%;
     height: 100%;
 }
 ul{
@@ -180,7 +180,7 @@ hr{
     position: relative;
     width: 100%;
     padding: 12px;
-    height: 400px;
+    height: 600px;
 }
 
 .hot-topic img{
@@ -259,8 +259,8 @@ main a:hover{
 }
 
 .main-container-left img{
-    width: 500px;
-    height: 500px;
+    width: 700px;
+    height: 700px;
     align-self: center;
 }
 
