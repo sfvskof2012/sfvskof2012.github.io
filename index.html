@@ -5,6 +5,8 @@
         <title>學測倒計時</title>
     </head>
     <body>
+        <h1 id="times"></h1>
+        <h1 id="arrow"></hi>
         <h1 id="hh"></h1>
     </body>
     <script type="text/javascript">
@@ -14,12 +16,21 @@
                 ends = end.getTime();
             var ss = (ends - now);
             var s = Math.floor(ss/1000) + (a * 60 * 60);
+            var n = Math.floor(now/1000)+ (a * 60 * 60);
 
             var day = Math.floor(s / 60 / 60 / 24);
+            var nday = Math.floor(n /60 /60 /24);
             var hour = Math.floor(s / 60 / 60 % 24);
+            var nhour = Math.floor(n /60 /60 %24);
             var min = Math.floor(s / 60 %60);
+            var nmin = Math.floor(n /60 %60);
             var sec = Math.floor(s % 60);
+            var nsec = Math.floor(n % 60);
+            var nowtime = "現在時間:"  +nhour+"時"+nmin+"分"+ nsec + "秒";
             var html = "距離學測還有"+day+"天"+hour+"時"+min+"分"+ sec + "秒";
+            var arow = "↓";
+            times.innerHTML = nowtime; 
+            arrow.innerHTML =  arow;
             hh.innerHTML = html;
         }
         station(2023,01,13,08);
@@ -29,6 +40,16 @@
         },1000);
     </script>
     <style type="text/css">
+        #times{
+            font-size: 50px;
+            text-align: center;
+        }
+
+        #arrow{
+            font-size: 50px;
+            text-align: center;
+        }
+
         #hh{
             font-size: 50px;
             text-align: center;
