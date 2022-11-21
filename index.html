@@ -1,58 +1,95 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>學測倒計時</title>
-    </head>
-    <body>
-        <h1 id="times"></h1>
-        <h1 id="arrow"></hi>
-        <h1 id="hh"></h1>
-    </body>
-    <script type="text/javascript">
-        function station(x,y,z,a){
-            var now = Date.now(),
-                end = new Date(x,y-1,z),
-                ends = end.getTime();
-            var ss = (ends - now);
-            var s = Math.floor(ss/1000) + (a * 60 * 60);
-            var n = Math.floor(now/1000)+ (a * 60 * 60);
+<head>
+    <meta charset="UTF-8">
+    <title>學測倒計時</title>
+</head>
+<body>
+    <h1 id="times"></h1>
+    <h1 id="arrow"></h1>
+    <h1 id="hh"></h1>
+</body>
+<script type="text/javascript">
+    function station(x, y, z, a) {
+        var now = Date.now(),
+            end = new Date(x, y - 1, z),
+            ends = end.getTime();
+        var ss = (ends - now);
+        var s = Math.floor(ss / 1000) + (a * 60 * 60);
+        var n = Math.floor(now / 1000) + (a * 60 * 60);
 
-            var day = Math.floor(s / 60 / 60 / 24);
-            var nday = Math.floor(n /60 /60 /24);
-            var hour = Math.floor(s / 60 / 60 % 24);
-            var nhour = Math.floor(n /60 /60 %24);
-            var min = Math.floor(s / 60 %60);
-            var nmin = Math.floor(n /60 %60);
-            var sec = Math.floor(s % 60);
-            var nsec = Math.floor(n % 60);
-            var nowtime = "現在時間:"  +nhour+"時"+nmin+"分"+ nsec + "秒";
-            var html = "距離學測還有"+day+"天"+hour+"時"+min+"分"+ sec + "秒";
-            var arow = "↓";
-            times.innerHTML = nowtime; 
-            arrow.innerHTML =  arow;
-            hh.innerHTML = html;
-        }
-        station(2023,01,13,08);
+        var day = Math.floor(s / 60 / 60 / 24);
+        var nday = Math.floor(n / 60 / 60 / 24);
+        var hour = Math.floor(s / 60 / 60 % 24);
+        var nhour = Math.floor(n / 60 / 60 % 24);
+        var min = Math.floor(s / 60 % 60);
+        var nmin = Math.floor(n / 60 % 60);
+        var sec = Math.floor(s % 60);
+        var nsec = Math.floor(n % 60);
+        var nowtime = "現在時間 : "
+        var html = "距離學測還有 : "
 
-        setInterval(function(){
-            station(2023,01,13,08)
-        },1000);
-    </script>
-    <style type="text/css">
-        #times{
-            font-size: 50px;
-            text-align: center;
-        }
+        if (nhour < 10)
+            nowtime += "0" + nhour + "時";
+        else
+            nowtime += nhour + "時";
 
-        #arrow{
-            font-size: 50px;
-            text-align: center;
-        }
+        if (nmin < 10)
+            nowtime += "0" + nmin + "分";
+        else
+            nowtime += nmin + "分";
 
-        #hh{
-            font-size: 50px;
-            text-align: center;
-        }
-    </style>
+        if (nsec < 10)
+            nowtime += "0" + nsec + "秒";
+        else
+            nowtime += nsec + "秒";
+
+
+        if (day < 10)
+            html += "0" + day + "天";
+        else
+            html += day + "天";
+
+        if (hour < 10)
+            html += "0" + hour + "時";
+        else
+            html += hour + "時";
+
+        if (min < 10)
+            html += "0" + min + "分";
+        else
+            html += min + "分";
+
+        if (sec < 10)
+            html += "0" + sec + "秒";
+        else
+            html += sec + "秒";
+
+        var arow = "↓";
+        times.innerHTML = nowtime;
+        arrow.innerHTML = arow;
+        hh.innerHTML = html;
+    }
+    station(2023, 01, 13, 08);
+
+    setInterval(function () {
+        station(2023, 01, 13, 08)
+    }, 1000);
+</script>
+<style type="text/css">
+    #times {
+        font-size: 50px;
+        text-align: center;
+    }
+
+    #arrow {
+        font-size: 50px;
+        text-align: center;
+    }
+
+    #hh {
+        font-size: 50px;
+        text-align: center;
+    }
+</style>
 </html>
