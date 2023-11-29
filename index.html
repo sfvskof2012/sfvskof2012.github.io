@@ -6,8 +6,6 @@
 </head>
 <body>
     <h1 id="times"></h1>
-    <h1 id="arrow"></h1>
-    <h1 id="hh"></h1>
 </body>
 <script type="text/javascript">
     function station(x, y, z, a) {
@@ -27,7 +25,6 @@
         var sec = Math.floor(s % 60);
         var nsec = Math.floor(n % 60);
         var nowtime = "現在時間 : "
-        var html = "距離分科還有 : "
 
         if (nhour < 10)
             nowtime += "0" + nhour + "時";
@@ -43,32 +40,8 @@
             nowtime += "0" + nsec + "秒";
         else
             nowtime += nsec + "秒";
-
-
-        if (day < 10)
-            html += "0" + day + "天";
-        else
-            html += day + "天";
-
-        if (hour < 10)
-            html += "0" + hour + "時";
-        else
-            html += hour + "時";
-
-        if (min < 10)
-            html += "0" + min + "分";
-        else
-            html += min + "分";
-
-        if (sec < 10)
-            html += "0" + sec + "秒";
-        else
-            html += sec + "秒";
-
-        var arow = "↓";
+       
         times.innerHTML = nowtime;
-        arrow.innerHTML = arow;
-        hh.innerHTML = html;
     }
     station(2023, 07, 12, 08);
 
@@ -77,20 +50,15 @@
     }, 1000);
 </script>
 <style type="text/css">
+    body{
+        background-color:#2E2E2E;
+        color:white;
+    }
+
     #times {
-        font-size: 50px;
-        text-align: center;
+        font-size: 70px;
+        text-align: center;     
     }
 
-    #arrow {
-        font-size: 50px;
-        text-align: center;
-
-    }
-
-    #hh {
-        font-size: 50px;
-        text-align: center;
-    }
 </style>
 </html>
