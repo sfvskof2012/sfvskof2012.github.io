@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>分科倒計時</title>
+    <title>台灣現在時間</title>
 </head>
 <body>
     <h1 id="times"></h1>
@@ -40,7 +40,7 @@
             nowtime += "0" + nsec + "秒";
         else
             nowtime += nsec + "秒";
-       
+
         times.innerHTML = nowtime;
     }
     station(2023, 07, 12, 08);
@@ -50,15 +50,14 @@
     }, 1000);
 </script>
 <style type="text/css">
-    body{
-        background-color:#2E2E2E;
-        color:white;
+    body {
+        background-color: #2E2E2E;
+        color: white;
     }
 
     #times {
         font-size: 70px;
-        text-align: center;     
+        text-align: center;
     }
-
 </style>
 </html>
