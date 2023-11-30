@@ -47,11 +47,20 @@
             transition: opacity 0.5s ease-in-out, font-size 0.5s linear;
         }
 
+	 #elderText {
+            margin-top: 10px;
+            font-size: 2em;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out, font-size 0.5s linear;
+        }
+
         label {
-            font-size: 1.2em;
+            font-size: 1.5em;
             margin-bottom: 10px;
             display: block;
         }
+
     </style>
 </head>
 <body>
@@ -70,6 +79,7 @@
 
     <div id="countdown"></div>
     <div id="dragonText"></div>
+    <div id="elderText"></div>
 
     <script>
         let selectedTimezone = "Asia/Taipei";
@@ -78,6 +88,12 @@
             const now = new Date();
             const options = { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: selectedTimezone };
             const timeString = now.toLocaleTimeString('en-US', options);
+
+            const isMorningFiveUTC = now.getUTCHours() === 5;
+            const isMorningElevenUTC = now.getUTCHours() === 11;
+            const isAfternoonFiveUTC = now.getUTCHours() === 17;
+            const isEveningElevenUTC = now.getUTCHours() === 23;
+
 
             const offset = parseInt(document.getElementById('timezoneSelect').selectedOptions[0].getAttribute('data-offset'));
             const timezoneOffsetString = offset >= 0 ? `+${offset}` : offset;
@@ -90,10 +106,24 @@
             const seconds = now.getSeconds();
             let countdownSeconds;
 
+	    if ((isEveningElevenUTC || isMorningFiveUTC || isAfternoonFiveUTC || isEveningElevenUTC) && minutes <= 15) {
+
+            document.getElementById('elderText').innerHTML = '窮老頭來了，快去抽獎，祝好運!!!';
+            document.getElementById('elderText').style.opacity = 1;
+
+            } else {
+
+            document.getElementById('elderText').style.opacity = 0;
+
+            }
+
+
+         
             if (minutes % 3 === 2 && seconds >= 50) {
                 countdownSeconds = 60 - seconds - 1;
                 document.getElementById('dragonText').innerHTML = '快點抓龍!!!!!';
                 document.getElementById('dragonText').style.opacity = 1;
+
 
                 // 計算動態字體大小
                 const fontSize = `${70 - countdownSeconds * 5}px`;;
@@ -103,6 +133,7 @@
                 countdownSeconds = (nextDragonMinute - minutes) * 60 - seconds;
                 document.getElementById('dragonText').style.opacity = 0;
                 document.getElementById('dragonText').style.fontSize = '2em'; // 非倒數時的字體大小
+
             }
 
             const countdownMinutes = Math.floor(countdownSeconds / 60);
