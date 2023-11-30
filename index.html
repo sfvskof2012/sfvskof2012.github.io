@@ -92,7 +92,7 @@
 
             if (minutes % 3 === 2 && seconds >= 50) {
                 countdownSeconds = 60 - seconds - 1;
-                document.getElementById('dragonText').innerHTML = '快點抓龍!!!!';
+                document.getElementById('dragonText').innerHTML = '快點抓龍!!!!!';
                 document.getElementById('dragonText').style.opacity = 1;
 
                 // 計算動態字體大小
@@ -108,7 +108,7 @@
             const countdownMinutes = Math.floor(countdownSeconds / 60);
             const countdownSecondsDisplay = countdownSeconds % 60;
             const countdownString = `${countdownMinutes}:${countdownSecondsDisplay < 10 ? '0' : ''}${countdownSecondsDisplay}`;
-            document.getElementById('countdown').innerHTML = `距離下一個時刻還有：${countdownString}`;
+            document.getElementById('countdown').innerHTML = `距離下一個搶龍時間還有：${countdownString}`;
         }
 
         function updateTimezone(newTimezone) {
