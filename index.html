@@ -153,7 +153,7 @@
             .sort((a, b) => parseInt(a.getAttribute('data-offset')) - parseInt(b.getAttribute('data-offset')))
             .forEach(option => select.add(option));
 
-        setInterval(updateTime, 1000);
+        setInterval(updateTime, 100);
         updateTime();
     </script>
 </body>
