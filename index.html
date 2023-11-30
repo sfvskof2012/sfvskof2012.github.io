@@ -1,63 +1,129 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>台灣現在時間</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>現在是抓龍時間</title>
+    <style>
+        body {
+            background-color: #282c35;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        #currentTime {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        #timezone {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+
+        #timezoneSelect {
+            font-size: 1.2em;
+            padding: 10px;
+            border: none;
+            background-color: #40444f;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        #countdown {
+            font-size: 2em;
+            margin-top: 10px;
+        }
+
+        #dragonText {
+            margin-top: 10px;
+            font-size: 2em;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out, font-size 0.5s linear;
+        }
+
+        label {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            display: block;
+        }
+    </style>
 </head>
 <body>
-    <h1 id="times"></h1>
+    <div id="timezone"></div>
+    <div id="currentTime"></div>
+
+    <label for="timezoneSelect">選擇時區：</label>
+    <select id="timezoneSelect" onchange="updateTimezone(this.value)">
+        <option value="America/Los_Angeles" data-offset="-8">美國西部時間 (UTC-8)</option>
+        <option value="America/Chicago" data-offset="-6">美國中部時間 (UTC-6)</option>
+        <option value="America/New_York" data-offset="-5">美國東部時間 (UTC-5)</option>
+        <option value="Europe/London" data-offset="0">英國時間 (UTC+0)</option>
+        <option value="Asia/Taipei" selected data-offset="8">台北標準時間 (UTC+8)</option>
+        <option value="Asia/Tokyo" data-offset="9">日本標準時間 (UTC+9)</option>
+    </select>
+
+    <div id="countdown"></div>
+    <div id="dragonText"></div>
+
+    <script>
+        let selectedTimezone = "Asia/Taipei";
+
+        function updateTime() {
+            const now = new Date();
+            const options = { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: selectedTimezone };
+            const timeString = now.toLocaleTimeString('en-US', options);
+
+            const offset = parseInt(document.getElementById('timezoneSelect').selectedOptions[0].getAttribute('data-offset'));
+            const timezoneOffsetString = offset >= 0 ? `+${offset}` : offset;
+
+            document.getElementById('timezone').innerHTML = `時區：${selectedTimezone} (UTC${timezoneOffsetString})`;
+            document.getElementById('currentTime').innerHTML = `現在時間：${timeString}`;
+
+            // 計算距離下一個時刻的倒計時
+            const minutes = now.getMinutes();
+            const seconds = now.getSeconds();
+            let countdownSeconds;
+
+            if (minutes % 3 === 2 && seconds >= 50) {
+                countdownSeconds = 60 - seconds - 1;
+                document.getElementById('dragonText').innerHTML = '快點抓龍!!!!';
+                document.getElementById('dragonText').style.opacity = 1;
+
+                // 計算動態字體大小
+                const fontSize = `${70 - countdownSeconds * 5}px`;;
+                document.getElementById('dragonText').style.fontSize = fontSize;
+            } else {
+                const nextDragonMinute = (Math.floor(minutes / 3) + 1) * 3;
+                countdownSeconds = (nextDragonMinute - minutes) * 60 - seconds;
+                document.getElementById('dragonText').style.opacity = 0;
+                document.getElementById('dragonText').style.fontSize = '2em'; // 非倒數時的字體大小
+            }
+
+            const countdownMinutes = Math.floor(countdownSeconds / 60);
+            const countdownSecondsDisplay = countdownSeconds % 60;
+            const countdownString = `${countdownMinutes}:${countdownSecondsDisplay < 10 ? '0' : ''}${countdownSecondsDisplay}`;
+            document.getElementById('countdown').innerHTML = `距離下一個時刻還有：${countdownString}`;
+        }
+
+        function updateTimezone(newTimezone) {
+            selectedTimezone = newTimezone;
+            updateTime();
+        }
+
+        // 根據 option 的 data-offset 屬性排序時區
+        const select = document.getElementById('timezoneSelect');
+        Array.from(select.options)
+            .sort((a, b) => parseInt(a.getAttribute('data-offset')) - parseInt(b.getAttribute('data-offset')))
+            .forEach(option => select.add(option));
+
+        setInterval(updateTime, 1000);
+        updateTime();
+    </script>
 </body>
-<script type="text/javascript">
-    function station(x, y, z, a) {
-        var now = Date.now(),
-            end = new Date(x, y - 1, z),
-            ends = end.getTime();
-        var ss = (ends - now);
-        var s = Math.floor(ss / 1000) + (a * 60 * 60);
-        var n = Math.floor(now / 1000) + (a * 60 * 60);
-
-        var day = Math.floor(s / 60 / 60 / 24);
-        var nday = Math.floor(n / 60 / 60 / 24);
-        var hour = Math.floor(s / 60 / 60 % 24);
-        var nhour = Math.floor(n / 60 / 60 % 24);
-        var min = Math.floor(s / 60 % 60);
-        var nmin = Math.floor(n / 60 % 60);
-        var sec = Math.floor(s % 60);
-        var nsec = Math.floor(n % 60);
-        var nowtime = "現在時間 : "
-
-        if (nhour < 10)
-            nowtime += "0" + nhour + "時";
-        else
-            nowtime += nhour + "時";
-
-        if (nmin < 10)
-            nowtime += "0" + nmin + "分";
-        else
-            nowtime += nmin + "分";
-
-        if (nsec < 10)
-            nowtime += "0" + nsec + "秒";
-        else
-            nowtime += nsec + "秒";
-
-        times.innerHTML = nowtime;
-    }
-    station(2023, 07, 12, 08);
-
-    setInterval(function () {
-        station(2023, 07, 12, 08)
-    }, 1000);
-</script>
-<style type="text/css">
-    body {
-        background-color: #2E2E2E;
-        color: white;
-    }
-
-    #times {
-        font-size: 70px;
-        text-align: center;
-    }
-</style>
 </html>
