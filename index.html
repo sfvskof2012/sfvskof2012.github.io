@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>現在是抓龍時間</title>
+    <title>現在是搶龍時間</title>
     <style>
         body {
             background-color: #282c35;
@@ -44,7 +44,8 @@
             font-size: 2em;
             font-weight: bold;
             opacity: 0;
-            transition: opacity 0.5s ease-in-out, font-size 0.5s linear, color 0.5s ease-in-out;
+            transition: opacity 0.5s ease-in-out, font-size 0.5s linear, background-color 0.5s ease-in-out;
+            background-color: transparent; /* Initial background color */
         }
 
         .flashing {
@@ -53,15 +54,14 @@
 
         @keyframes flash {
             from {
-                color: red; /* 初始顏色 */
+                background-color: transparent;
             }
-
             to {
-                color: white; /* 終止顏色 */
+                background-color: red;
             }
         }
 
-        #elderText {
+	 #elderText {
             margin-top: 10px;
             font-size: 2em;
             font-weight: bold;
@@ -69,13 +69,14 @@
             transition: opacity 0.5s ease-in-out, font-size 0.5s linear;
         }
 
-        #footer {
+	 #footer {
             position: fixed;
             bottom: 0;
             width: 100%;
             background-color: #40444f;
             color: white;
-            padding: 3px;
+	    margin-left: -20px;
+            padding: 10px;
         }
 
         label {
@@ -83,6 +84,7 @@
             margin-bottom: 10px;
             display: block;
         }
+
     </style>
 </head>
 <body>
@@ -103,15 +105,22 @@
     <div id="dragonText"></div>
     <div id="elderText"></div>
 
+    <div id="footer"><p>搶龍時鐘 ver 0.0.3 更新於: 2023/12/1</p></div>
 
     <script>
         let selectedTimezone = "Asia/Taipei";
 
         function updateTime() {
             const now = new Date();
-            now.setSeconds(now.getSeconds() + 1);
+			now.setMilliseconds(now.getMilliseconds() - 500);
             const options = { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: selectedTimezone };
             const timeString = now.toLocaleTimeString('en-US', options);
+
+            const isMorningFiveUTC = now.getUTCHours() === 5;
+            const isMorningElevenUTC = now.getUTCHours() === 11;
+            const isAfternoonFiveUTC = now.getUTCHours() === 17;
+            const isEveningElevenUTC = now.getUTCHours() === 23;
+
 
             const offset = parseInt(document.getElementById('timezoneSelect').selectedOptions[0].getAttribute('data-offset'));
             const timezoneOffsetString = offset >= 0 ? `+${offset}` : offset;
@@ -119,26 +128,39 @@
             document.getElementById('timezone').innerHTML = `時區：${selectedTimezone} (UTC${timezoneOffsetString})`;
             document.getElementById('currentTime').innerHTML = `現在時間：${timeString}`;
 
+            // 計算距離下一個時刻的倒計時
             const minutes = now.getMinutes();
             const seconds = now.getSeconds();
             let countdownSeconds;
 
-            // Check dragon catching condition
+	    if ((isMorningFiveUTC || isMorningElevenUTC || isAfternoonFiveUTC || isEveningElevenUTC) && minutes < 15) {
+
+            document.getElementById('elderText').innerHTML = '窮老頭來了，快去抽獎，祝好運!!!';
+            document.getElementById('elderText').style.opacity = 1;
+
+            } else {
+
+            document.getElementById('elderText').style.opacity = 0;
+
+            }
+
+
+         
             if (minutes % 3 === 2 && seconds >= 50) {
                 countdownSeconds = 60 - seconds;
-                document.getElementById('dragonText').innerHTML = '快點抓龍!!!!!';
-                document.getElementById('dragonText').classList.add('flashing');
+                document.getElementById('dragonText').innerHTML = '快點抓龍!!!!!';				
+				document.getElementById('dragonText').classList.add('flashing'); // Add flashing effect
                 document.getElementById('dragonText').style.opacity = 1;
-
-                // Calculate dynamic font size
-                const fontSize = `${70 - countdownSeconds * 5}px`;
+				
+                // 計算動態字體大小
+                const fontSize = `${70 - countdownSeconds * 5}px`;;
                 document.getElementById('dragonText').style.fontSize = fontSize;
             } else {
                 const nextDragonMinute = (Math.floor(minutes / 3) + 1) * 3;
                 countdownSeconds = (nextDragonMinute - minutes) * 60 - seconds;
                 document.getElementById('dragonText').style.opacity = 0;
-                document.getElementById('dragonText').classList.remove('flashing');
-                document.getElementById('dragonText').style.fontSize = '2em'; // Non-countdown font size
+                document.getElementById('dragonText').style.fontSize = '2em'; // 非倒數時的字體大小
+
             }
 
             const countdownMinutes = Math.floor(countdownSeconds / 60);
@@ -152,16 +174,14 @@
             updateTime();
         }
 
+        // 根據 option 的 data-offset 屬性排序時區
         const select = document.getElementById('timezoneSelect');
         Array.from(select.options)
             .sort((a, b) => parseInt(a.getAttribute('data-offset')) - parseInt(b.getAttribute('data-offset')))
             .forEach(option => select.add(option));
 
-        setInterval(updateTime, 1000); // Change interval to 1000 milliseconds (1 second)
+        setInterval(updateTime, 10);
         updateTime();
     </script>
-    <div id="footer">
-        <p>(sfvskof2012製作 版本: ver 0.0.2 更新日期:2023/12/1)</p>
-    </div>
 </body>
 </html>
