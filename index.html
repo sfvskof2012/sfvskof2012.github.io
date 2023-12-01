@@ -106,7 +106,7 @@
             const seconds = now.getSeconds();
             let countdownSeconds;
 
-	    if ((isEveningElevenUTC || isMorningFiveUTC || isAfternoonFiveUTC || isEveningElevenUTC) && minutes <= 15) {
+	    if ((isEveningElevenUTC || isMorningFiveUTC || isAfternoonFiveUTC || isEveningElevenUTC) && minutes < 15) {
 
             document.getElementById('elderText').innerHTML = '窮老頭來了，快去抽獎，祝好運!!!';
             document.getElementById('elderText').style.opacity = 1;
