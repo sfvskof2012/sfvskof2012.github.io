@@ -25,7 +25,7 @@
         }
 
         #timezoneSelect {
-            font-size: 1.2em;
+            font-size: 1.5em;
             padding: 10px;
             border: none;
             background-color: #40444f;
@@ -61,7 +61,7 @@
             }
         }
 
-	 #elderText {
+        #elderText {
             margin-top: 10px;
             font-size: 2em;
             font-weight: bold;
@@ -69,14 +69,14 @@
             transition: opacity 0.5s ease-in-out, font-size 0.5s linear;
         }
 
-	 #footer {
+        #footer {
             position: fixed;
             bottom: 0;
             width: 100%;
             background-color: #40444f;
             color: white;
-	    margin-left: -20px;
             padding: 10px;
+            margin-left: -20px;
         }
 
         label {
@@ -85,6 +85,40 @@
             display: block;
         }
 
+        /* 添加媒體查詢，根據設備的寬度應用不同的樣式 */
+        @media only screen and (max-width: 600px) {
+            #currentTime {
+                font-size: 2em;
+            }
+
+            #timezone {
+                font-size: 1em;
+            }
+
+            #timezoneSelect {
+                font-size: 1.5em;
+            }
+
+            #countdown {
+                font-size: 1.5em;
+            }
+
+            #dragonText {
+                font-size: 1.2em; /* 修改字體大小 */
+            }
+
+            #elderText {
+                font-size: 1.2em; /* 修改字體大小 */
+            }
+
+            #footer {
+                padding: 8px;
+            }
+
+            label {
+                font-size: 1.2em;
+            }
+        }
     </style>
 </head>
 <body>
@@ -105,7 +139,7 @@
     <div id="dragonText"></div>
     <div id="elderText"></div>
 
-    <div id="footer"><p>搶龍時鐘 ver 0.0.3 更新於: 2023/12/1</p></div>
+    <div id="footer"><span>&copy;搶龍時鐘 ver 0.0.3 更新於: 2023/12/1 </span></div>
 
     <script>
         let selectedTimezone = "Asia/Taipei";
