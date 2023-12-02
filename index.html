@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>現在是搶龍時間</title>
     <style>
         body {
             background-color: #282c35;
@@ -139,7 +138,7 @@
     <div id="dragonText"></div>
     <div id="elderText"></div>
 
-    <div id="footer"><span>&copy;搶龍時鐘 ver 0.0.3 更新於: 2023/12/1 </span></div>
+    <div id="footer"><span>&copy;搶龍時鐘 ver 0.0.4 更新於: 2023/12/2 </span></div>
 
     <script>
         let selectedTimezone = "Asia/Taipei";
@@ -171,6 +170,7 @@
 
             document.getElementById('elderText').innerHTML = '窮老頭來了，快去抽獎，祝好運!!!';
             document.getElementById('elderText').style.opacity = 1;
+			let titletext = "";
 
             } else {
 
@@ -189,11 +189,13 @@
                 // 計算動態字體大小
                 const fontSize = `${70 - countdownSeconds * 5}px`;;
                 document.getElementById('dragonText').style.fontSize = fontSize;
+				titletext = "快點!!!只剩下"
             } else {
                 const nextDragonMinute = (Math.floor(minutes / 3) + 1) * 3;
                 countdownSeconds = (nextDragonMinute - minutes) * 60 - seconds;
                 document.getElementById('dragonText').style.opacity = 0;
                 document.getElementById('dragonText').style.fontSize = '2em'; // 非倒數時的字體大小
+				titletext = "下一次搶龍時間"
 
             }
 
@@ -201,6 +203,7 @@
             const countdownSecondsDisplay = countdownSeconds % 60;
             const countdownString = `${countdownMinutes}:${countdownSecondsDisplay < 10 ? '0' : ''}${countdownSecondsDisplay}`;
             document.getElementById('countdown').innerHTML = `距離下一個搶龍時間還有：${countdownString}`;
+			document.title = titletext + ": " + countdownString;
         }
 
         function updateTimezone(newTimezone) {
