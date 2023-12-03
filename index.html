@@ -14,34 +14,39 @@
         }
 
         #currentTime {
-            font-size: 3em;
+            font-size: 2em;
+			white-space: nowrap;
             margin-bottom: 20px;
         }
 
         #timezone {
             font-size: 1.2em;
+			white-space: nowrap;
             margin-bottom: 20px;
         }
 
         #timezoneSelect {
-            font-size: 1.5em;
+            font-size: 1.2em;
             padding: 10px;
             border: none;
+			white-space: nowrap;
             background-color: #40444f;
             color: white;
             cursor: pointer;
-            border-radius: 5px;
+            border-radius: 10px;
         }
 
         #countdown {
-            font-size: 2em;
+            font-size: 1.5em;
             margin-top: 10px;
+			white-space: nowrap;
         }
 
         #dragonText {
             margin-top: 10px;
             font-size: 2em;
             font-weight: bold;
+			white-space: nowrap;
             opacity: 0;
             transition: opacity 0.5s ease-in-out, font-size 0.5s linear, background-color 0.5s ease-in-out;
             background-color: transparent; /* Initial background color */
@@ -60,6 +65,24 @@
             }
         }
 
+		#downloadButton {
+        color: #3498db; /* 修改超連結顏色為深藍色 */
+        text-decoration: none; /* 移除底線 */
+        font-size: 1.5em;
+        display: inline-block;
+        margin-top: 20px;
+        padding: 10px 20px;
+        border: 2px solid #3498db; /* 添加邊框 */
+        border-radius: 5px;
+        transition: color 0.3s ease-in-out, background-color 0.3s ease-in-out;
+		}
+
+		#downloadButton:hover {
+        background-color: #3498db; /* 滑鼠懸停時改變背景顏色 */
+        color: #ffffff; /* 滑鼠懸停時改變文字顏色 */
+		}
+
+		
         #elderText {
             margin-top: 10px;
             font-size: 2em;
@@ -76,52 +99,21 @@
             color: white;
             padding: 10px;
             margin-left: -20px;
+			white-space: nowrap; /* 保持 label 內容不斷行 */
         }
 
         label {
             font-size: 1.5em;
             margin-bottom: 10px;
-            display: block;
+			display: block;
+			white-space: nowrap; /* 保持 label 內容不斷行 */
         }
 
-        /* 添加媒體查詢，根據設備的寬度應用不同的樣式 */
-        @media only screen and (max-width: 600px) {
-            #currentTime {
-                font-size: 2em;
-            }
-
-            #timezone {
-                font-size: 1em;
-            }
-
-            #timezoneSelect {
-                font-size: 1.5em;
-            }
-
-            #countdown {
-                font-size: 1.5em;
-            }
-
-            #dragonText {
-                font-size: 1.2em; /* 修改字體大小 */
-            }
-
-            #elderText {
-                font-size: 1.2em; /* 修改字體大小 */
-            }
-
-            #footer {
-                padding: 8px;
-            }
-
-            label {
-                font-size: 1.2em;
-            }
-        }
+       
     </style>
 </head>
 <body>
-    <div id="timezone"></div>
+<!--     <div id="timezone"></div> -->
     <div id="currentTime"></div>
 
     <label for="timezoneSelect">選擇時區：</label>
@@ -130,15 +122,18 @@
         <option value="America/Chicago" data-offset="-6">美國中部時間 (UTC-6)</option>
         <option value="America/New_York" data-offset="-5">美國東部時間 (UTC-5)</option>
         <option value="Europe/London" data-offset="0">英國時間 (UTC+0)</option>
-        <option value="Asia/Taipei" selected data-offset="8">台北標準時間 (UTC+8)</option>
-        <option value="Asia/Tokyo" data-offset="9">日本標準時間 (UTC+9)</option>
+        <option value="Asia/Taipei" selected data-offset="8">台北時間 (UTC+8)</option>
+        <option value="Asia/Tokyo" data-offset="9">日本時間 (UTC+9)</option>
     </select>
 
     <div id="countdown"></div>
     <div id="dragonText"></div>
     <div id="elderText"></div>
+	
+	 <!-- 直接設定下載按鈕的 href 為檔案的 Raw URL -->
+	<!-- <a id="downloadButton" href="https://raw.githubusercontent.com/sfvskof2012/sfvskof2012.github.io/sfvskof2012/dragonclock_ver0.1.rar" download="dragonclock_ver0.1.rar">點我下載視窗版</a>	 -->
 
-    <div id="footer"><span>&copy;搶龍時鐘 ver 0.0.4 更新於: 2023/12/2 </span></div>
+    <div id="footer"><span>&copy;搶龍時鐘 ver 1.0.1 更新於: 2023/12/3 </span></div>
 
     <script>
         let selectedTimezone = "Asia/Taipei";
@@ -158,8 +153,8 @@
             const offset = parseInt(document.getElementById('timezoneSelect').selectedOptions[0].getAttribute('data-offset'));
             const timezoneOffsetString = offset >= 0 ? `+${offset}` : offset;
 
-            document.getElementById('timezone').innerHTML = `時區：${selectedTimezone} (UTC${timezoneOffsetString})`;
-            document.getElementById('currentTime').innerHTML = `現在時間：${timeString}`;
+            // document.getElementById('timezone').innerHTML = `時區：${selectedTimezone} (UTC${timezoneOffsetString})`;
+            document.getElementById('currentTime').innerHTML = `${timeString}`;
 
             // 計算距離下一個時刻的倒計時
             const minutes = now.getMinutes();
@@ -186,26 +181,29 @@
 				document.getElementById('dragonText').classList.add('flashing'); // Add flashing effect
                 document.getElementById('dragonText').style.opacity = 1;
 				
-                // 計算動態字體大小
-                const fontSize = `${70 - countdownSeconds * 5}px`;;
+                // 計算動態字體大小             
+				const maxFontSize = 30; // 最大字體大小
+				const minFontSize = 14; // 最小字體大小
+				const fontSizePercentage = 2 - countdownSeconds / 10; // 根據倒數時間的一部分來計算百分比
+				const fontSize = `${minFontSize + fontSizePercentage * (maxFontSize - minFontSize)}px`;
                 document.getElementById('dragonText').style.fontSize = fontSize;
-				titletext = "快點!!!只剩下"
+				titletext = "只剩下"
             } else {
+			
                 const nextDragonMinute = (Math.floor(minutes / 3) + 1) * 3;
                 countdownSeconds = (nextDragonMinute - minutes) * 60 - seconds;
                 document.getElementById('dragonText').style.opacity = 0;
                 document.getElementById('dragonText').style.fontSize = '2em'; // 非倒數時的字體大小
-				titletext = "下一次搶龍時間"
-
+				titletext = "搶龍時間"
             }
 
             const countdownMinutes = Math.floor(countdownSeconds / 60);
             const countdownSecondsDisplay = countdownSeconds % 60;
             const countdownString = `${countdownMinutes}:${countdownSecondsDisplay < 10 ? '0' : ''}${countdownSecondsDisplay}`;
-            document.getElementById('countdown').innerHTML = `距離下一個搶龍時間還有：${countdownString}`;
+            document.getElementById('countdown').innerHTML = `距離搶龍時間：${countdownString}`;
 			document.title = titletext + ": " + countdownString;
         }
-
+		
         function updateTimezone(newTimezone) {
             selectedTimezone = newTimezone;
             updateTime();
