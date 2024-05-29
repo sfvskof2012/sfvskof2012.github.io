@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="reset.css">
+    <style>
+
+        .main-nav{
+            background-color: brown;
+            position: fixed;
+            width: 100%;
+            height: 80px;
+        }
+        .main-nav .logo
+        {
+            position:absolute;
+            left: 0;
+            top: 0;
+        }
+        .main-nav .menu{
+            display: flex;
+            justify-content: center;
+        }
+        .banner{
+            width: 100%;
+        }
+        .main-nav .menu li > a{
+            text-decoration: none;
+            padding: 10px 30px;
+            font-weight: 500;
+            line-height: 50px;
+            text-align: center;
+            display: inline-block;
+            font-size: 24px;
+            color: aliceblue;
+            font-family: 'Times New Roman', Times, serif;
+        }
+        .main-nav .menu li{
+            position: relative;
+        }
+        .main-nav .menu .sub-menu{
+            display: none;
+            position: absolute;
+        }
+        .main-nav li:hover > a{
+            background-color: black;
+        }
+        .main-nav li:hover > .sub-menu{
+            display: block;
+            background-color: salmon;
+        }
+
+        .about-h2{
+            text-align: center;
+            font-size: 36px;
+            background-color: gray;
+            padding: 10px 0;
+        }
+        .about{
+            background-color: gray;
+        }
+        .about .wrap{
+            display: flex;
+            width: 960px;
+            text-align: center;
+            margin: auto;
+        }
+        .about .item{
+            padding: 10px 10px;
+        }
+
+        .about .item:hover{
+            color: bisque;
+        }
+        .about img{
+           animation: cc 3s 1.5s forwards;
+        }
+        .product-h2{
+            background-color: skyblue;
+            font-size: 36px;
+            text-align: center;
+        }
+        .product{
+            background-color: skyblue;
+            display: flex;
+            text-align: center;
+            margin: auto;
+        }
+        .product img{
+            padding: 10px 30px;
+        }
+        .product p{
+            text-align: center;
+        }
+        @keyframes cc{
+            0%{border-radius: 0%;}
+            50%{border-radius:50%}
+            100%{border-radius: 100%;}
+        }
+
+        footer{
+            background-color: black;
+            text-align: center;
+            color: white;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="main-nav">
+        <div class="logo">
+            <img src="https://picsum.photos/80/80/?random=10">
+        </div>
+        <ul class="menu">
+            <li><a href="#">FirstA</a></li>
+            <li><a href="#">FirstB</a>
+                <ul class="sub-menu">
+                    <li><a href="#">SecondB</a></li>
+                    <li><a href="#">SecondB</a></li>
+                    <li><a href="#">SecondB</a></li>
+                </ul>
+            </li>
+            <li><a href="#">FirstC</a></li>
+            <li><a href="#">FirstD</a>
+                <ul class="sub-menu">
+                    <li><a href="#">SecondD</a></li>
+                    <li><a href="#">SecondD</a></li>
+                    <li><a href="#">SecondD</a></li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+    <img src="https://picsum.photos/1200/300/?random=10" class="banner">
+
+    <div class="about">
+        <h2 class="about-h2">關於我們</h2>
+        <div class="wrap">
+            <div class="item"><img src="https://picsum.photos/300/300/?random=10"><h3>Title</h3><p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Illo, nemo. Vero nesciunt, obcaecati dolor optio voluptatum omnis accusamus, recusandae doloremque voluptas necessitatibus culpa eaque fugiat sit assumenda sunt dolores consectetur.</p></div>
+            <div class="item"><img src="https://picsum.photos/300/300/?random=10"><h3>Title</h3><p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Illo, nemo. Vero nesciunt, obcaecati dolor optio voluptatum omnis accusamus, recusandae doloremque voluptas necessitatibus culpa eaque fugiat sit assumenda sunt dolores consectetur.</p></div>
+            <div class="item"><img src="https://picsum.photos/300/300/?random=10"><h3>Title</h3><p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Illo, nemo. Vero nesciunt, obcaecati dolor optio voluptatum omnis accusamus, recusandae doloremque voluptas necessitatibus culpa eaque fugiat sit assumenda sunt dolores consectetur.</p></div>
+        </div>
+    </div>
+
+    <h2 class="product-h2">服務項目</h2>
+    <div class="product">
+        <div class="item"><img src="https://picsum.photos/300/200/?random=10"><p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Numquam eaque vero consequuntur explicabo. Laborum quo necessitatibus sequi et ad nisi sunt asperiores debitis a, molestias labore saepe quidem voluptatem distinctio?</p></div>
+        <div class="item"><img src="https://picsum.photos/300/200/?random=10"><p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Numquam eaque vero consequuntur explicabo. Laborum quo necessitatibus sequi et ad nisi sunt asperiores debitis a, molestias labore saepe quidem voluptatem distinctio?</p></div>
+        <div class="item"><img src="https://picsum.photos/300/200/?random=10"><p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Numquam eaque vero consequuntur explicabo. Laborum quo necessitatibus sequi et ad nisi sunt asperiores debitis a, molestias labore saepe quidem voluptatem distinctio?</p></div>
+        <div class="item"><img src="https://picsum.photos/300/200/?random=10"><p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Numquam eaque vero consequuntur explicabo. Laborum quo necessitatibus sequi et ad nisi sunt asperiores debitis a, molestias labore saepe quidem voluptatem distinctio?</p></div>
+    </div>
+    <footer>&copy 2024/05/29 by sfvskof2012</footer>
+</body>
+</html>
