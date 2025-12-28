@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>道友請留步 v1.1 - 存檔修復版</title>
+    <title>道友請留步 v1.2 - 輪迴修復版</title>
     <style>
         /* === 核心配色 (GitHub Dark 風格) === */
         :root {
@@ -36,6 +36,7 @@
             overflow: hidden; 
         }
 
+        /* 捲動條美化 */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 3px; }
@@ -310,7 +311,7 @@
     const defaultGame = { 
         qi: 0, maxQi: 100, hp: 100, maxHp: 100, mp: 50, maxMp: 50, realmIdx: 0, gold: 20, 
         items: {}, fighting: false, meditating: false,
-        lastSaveTime: Date.now() // 用於計算離線收益
+        lastSaveTime: Date.now() 
     };
     
     // 初始化變數
@@ -346,13 +347,13 @@
         renderShop();
         
         // 自動存檔：每 5 秒
-        setInterval(saveGame, 5000);
+        setInterval(() => saveGame(false), 5000);
         // 遊戲主迴圈：每 1 秒
         setInterval(gameTick, 1000);
         
-        // [新增] 關閉/刷新網頁時強制存檔
+        // [強制存檔] 關閉/刷新網頁時
         window.addEventListener('beforeunload', () => {
-            saveGame();
+            saveGame(false);
         });
     }
 
@@ -375,15 +376,14 @@
         if (raw) {
             try {
                 const saved = JSON.parse(raw);
-                // 合併存檔與預設值，確保舊存檔相容新欄位
                 game = { ...defaultGame, ...saved };
-                game.fighting = false; // 讀檔不進入戰鬥
+                game.fighting = false; 
                 
                 // 計算離線收益
                 const now = Date.now();
                 const diffSeconds = (now - (game.lastSaveTime || now)) / 1000;
                 
-                if (diffSeconds > 10) { // 離開超過10秒才計算
+                if (diffSeconds > 10) { 
                     const r = realms[game.realmIdx];
                     const hpGain = Math.min(r.regen * diffSeconds, game.maxHp);
                     const mpGain = Math.min(r.regen * diffSeconds, game.maxMp);
@@ -409,9 +409,17 @@
         updateUI();
     }
 
+    // === [修復] 重入輪迴邏輯 ===
     function resetGame() {
         if(confirm("確定要刪除存檔重來嗎？修為將盡失！")) {
-            localStorage.removeItem(SAVE_KEY);
+            // 1. 先把記憶體中的 game 重置為初始值
+            // 這樣就算觸發了 beforeunload 自動存檔，存進去的也是初始狀態
+            game = JSON.parse(JSON.stringify(defaultGame));
+            
+            // 2. 手動存一次這個初始狀態
+            saveGame();
+            
+            // 3. 刷新頁面
             location.reload();
         }
     }
@@ -433,6 +441,7 @@
         } else {
             game.hp = Math.min(game.hp + r.regen, game.maxHp);
             game.mp = Math.min(game.mp + r.regen, game.maxMp);
+            // 正常掛機獲得修為
             if (game.qi < game.maxQi) game.qi = Math.min(game.qi + r.regen, game.maxQi);
         }
         
@@ -532,7 +541,7 @@
         game.mp = Math.min(game.mp + r.regen * 2, game.maxMp);
         showFloatText(e.clientX, e.clientY, `修為 +${r.clickExp}`, '#7ee787');
         updateUI();
-        // 點擊不存檔，避免效能問題，依賴自動存檔
+        // 點擊不存檔，依賴自動存檔
     }
 
     function showFloatText(x, y, text, color) {
