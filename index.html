@@ -1,222 +1,675 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>道友請留步 v0.9.4 - UI細節優化版</title>
     <style>
+        /* === 核心配色 (GitHub Dark 風格) === */
+        :root {
+            --bg-color: #0d1117;
+            --panel-bg: #161b22;
+            --border-color: #30363d;
+            --text-main: #c9d1d9;
+            --text-dim: #8b949e;
+            
+            /* 數值顏色 */
+            --color-hp: #ff7b72;
+            --color-mp: #79c0ff;
+            --color-qi: #7ee787;     /* 亮綠 */
+            --color-gold: #e3b341;
+            --color-rare: #d2a8ff;
+            
+            --btn-hover: #1f2428;
+        }
+
         body {
-            background-color: #282c35;
-            color: #ffffff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            text-align: center;
+            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
             margin: 0;
-            padding: 20px;
+            user-select: none;
+            overflow: hidden; 
         }
 
-        #currentTime {
-            font-size: 2em;
-			white-space: nowrap;
-            margin-bottom: 20px;
-        }
+        /* 捲動條美化 */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #8b949e; }
 
-        #timezone {
-            font-size: 1.2em;
-			white-space: nowrap;
-            margin-bottom: 20px;
-        }
-
-        #timezoneSelect {
-            font-size: 1.2em;
-            padding: 10px;
-            border: none;
-			white-space: nowrap;
-            background-color: #40444f;
-            color: white;
-            cursor: pointer;
-            border-radius: 10px;
-        }
-
-        #countdown {
-            font-size: 1.5em;
-            margin-top: 10px;
-			white-space: nowrap;
-        }
-
-        #dragonText {
-            margin-top: 10px;
-            font-size: 2em;
-            font-weight: bold;
-			white-space: nowrap;
-            opacity: 0;
-            transition: opacity 0.5s ease-in-out, font-size 0.5s linear, background-color 0.5s ease-in-out;
-            background-color: transparent; /* Initial background color */
-        }
-
-        .flashing {
-            animation: flash 1s infinite alternate;
-        }
-
-        @keyframes flash {
-            from {
-                background-color: transparent;
-            }
-            to {
-                background-color: red;
-            }
-        }
-
-		#downloadButton {
-        color: #3498db; /* 修改超連結顏色為深藍色 */
-        text-decoration: none; /* 移除底線 */
-        font-size: 1.5em;
-        display: inline-block;
-        margin-top: 20px;
-        padding: 10px 20px;
-        border: 2px solid #3498db; /* 添加邊框 */
-        border-radius: 5px;
-        transition: color 0.3s ease-in-out, background-color 0.3s ease-in-out;
-		}
-
-		#downloadButton:hover {
-        background-color: #3498db; /* 滑鼠懸停時改變背景顏色 */
-        color: #ffffff; /* 滑鼠懸停時改變文字顏色 */
-		}
-
-		
-        #elderText {
-            margin-top: 10px;
-            font-size: 2em;
-            font-weight: bold;
-            opacity: 0;
-            transition: opacity 0.5s ease-in-out, font-size 0.5s linear;
-        }
-
-        #footer {
-            position: fixed;
-            bottom: 0;
+        .game-app {
             width: 100%;
-            background-color: #40444f;
+            max-width: 480px;
+            height: 90vh;
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        header { padding: 15px; text-align: center; border-bottom: 1px solid var(--border-color); background: rgba(22, 27, 34, 0.95); }
+        .realm-badge { display: inline-block; padding: 4px 12px; background: rgba(126, 231, 135, 0.15); color: var(--color-qi); border-radius: 20px; font-size: 0.9em; font-weight: bold; margin-top: 5px; border: 1px solid rgba(126, 231, 135, 0.3); }
+
+        .nav-bar { display: grid; grid-template-columns: repeat(4, 1fr); border-bottom: 1px solid var(--border-color); }
+        .nav-item { padding: 12px; text-align: center; cursor: pointer; color: var(--text-dim); font-size: 0.95em; transition: 0.2s; border-bottom: 2px solid transparent; }
+        .nav-item:hover { background-color: var(--btn-hover); }
+        .nav-item.active { color: var(--text-main); border-bottom-color: var(--color-qi); font-weight: bold; color: var(--color-qi); }
+
+        .content-area { flex: 1; overflow-y: auto; padding: 20px; position: relative; }
+        .panel { display: none; animation: fadeIn 0.3s ease; }
+        .panel.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .status-group { margin-bottom: 20px; }
+        .status-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 6px; }
+        .status-label { font-size: 0.85em; font-weight: 600; color: var(--text-dim); }
+        .rate-tag { font-size: 0.85em; font-weight: normal; margin-left: 6px; opacity: 0.8; font-family: monospace; }
+        .c-hp { color: var(--color-hp); }
+        .c-mp { color: var(--color-mp); }
+        .c-qi { color: var(--color-qi); }
+
+        .status-val { font-size: 0.8em; color: var(--text-dim); font-family: monospace; }
+        .progress-track { height: 8px; background: #000; border-radius: 4px; overflow: hidden; }
+        .progress-bar { height: 100%; width: 0%; transition: width 0.2s linear; border-radius: 4px;}
+        .bg-hp { background-color: var(--color-hp); box-shadow: 0 0 10px rgba(255, 123, 114, 0.3); }
+        .bg-mp { background-color: var(--color-mp); box-shadow: 0 0 10px rgba(121, 192, 255, 0.3); }
+        .bg-qi { background-color: var(--color-qi); box-shadow: 0 0 10px rgba(126, 231, 135, 0.3); }
+
+        .stat-card { background: #21262d; border: 1px solid var(--border-color); border-radius: 8px; padding: 15px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center; margin-bottom: 20px; }
+        .stat-item span { display: block; font-size: 0.75em; color: var(--text-dim); margin-bottom: 3px; }
+        .stat-item strong { display: block; font-size: 1.1em; color: var(--text-main); }
+
+        .btn { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; background: #21262d; color: var(--text-main); font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.1s; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .btn:hover { background: #30363d; transform: translateY(-1px); }
+        .btn:active { transform: translateY(0); background: #161b22;}
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        
+        .btn-primary { background: #238636; border-color: rgba(240,246,252,0.1); color: #fff; }
+        .btn-primary:hover { background: #2ea043; }
+        
+        .btn-break { background: #238636; color: white; border: none; box-shadow: 0 4px 12px rgba(46, 160, 67, 0.4); animation: pulse-green 2s infinite; }
+        @keyframes pulse-green { 0% { box-shadow: 0 0 0 0 rgba(46, 160, 67, 0.4); } 70% { box-shadow: 0 0 0 6px rgba(46, 160, 67, 0); } 100% { box-shadow: 0 0 0 0 rgba(46, 160, 67, 0); } }
+        
+        .btn-danger { background: rgba(218, 54, 51, 0.1); color: var(--color-hp); border-color: rgba(248, 81, 73, 0.4); }
+        .btn-cultivate { border-color: var(--color-qi); color: var(--color-qi); background: rgba(126, 231, 135, 0.05); }
+        .btn-cultivate:hover { background: rgba(126, 231, 135, 0.15); }
+        .btn-meditate { border-color: var(--color-mp); color: var(--color-mp); background: rgba(121, 192, 255, 0.05); }
+        .btn-meditate.active { background: rgba(255, 123, 114, 0.15); color: var(--color-hp); border-color: var(--color-hp); animation: pulse-red 2s infinite; }
+        @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(255, 123, 114, 0.4); } 70% { box-shadow: 0 0 0 6px rgba(255, 123, 114, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 123, 114, 0); } }
+
+        .shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .shop-card { background: #21262d; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between; }
+        .shop-icon { font-size: 2em; margin-bottom: 5px; text-align: center; }
+        .shop-name { font-weight: bold; font-size: 0.9em; text-align: center; margin-bottom: 5px; color: var(--color-rare); }
+        .shop-desc { font-size: 0.75em; color: var(--text-dim); text-align: center; margin-bottom: 10px; height: 2.4em; overflow: hidden; }
+        .shop-price { text-align: center; color: var(--color-gold); font-size: 0.9em; margin-bottom: 5px; }
+        .bag-item { display: flex; align-items: center; justify-content: space-between; padding: 10px; border-bottom: 1px solid var(--border-color); }
+
+        .log-container { 
+            height: 120px; background: #0d1117; border-top: 1px solid var(--border-color); padding: 10px; overflow-y: auto; font-size: 13px; line-height: 1.6;
+            border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;
+        }
+        .log-line { margin-bottom: 4px; color: var(--text-dim); }
+        .log-highlight { color: var(--color-gold); } .log-exp { color: var(--color-qi); } .log-danger { color: var(--color-hp); } .log-info { color: var(--color-mp); }
+
+        .modal-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(13, 17, 23, 0.95); backdrop-filter: blur(5px); z-index: 99; display: none; justify-content: center; align-items: center; }
+        .modal-content { background: #161b22; border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; width: 85%; max-width: 320px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); text-align: center; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        
+        /* SVG 圓形進度條 */
+        .circle-wrap { position: relative; width: 100px; height: 100px; margin: 20px auto; }
+        .circular-chart { display: block; margin: 0 auto; max-width: 100%; max-height: 100%; }
+        .circle-bg { fill: none; stroke: #30363d; stroke-width: 2.5; }
+        .circle {
+            fill: none; stroke: var(--color-qi); stroke-width: 2.5; stroke-linecap: round;
+            animation: progress 1s ease-out forwards; transition: stroke-dasharray 0.3s, stroke 0.3s;
+        }
+        
+        /* [修正 1] 優化機率文字：移除 Monospace，改用標準字體，加光暈 */
+        .percentage-text {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-size: 1.5em; /* 字體加大 */
+            font-weight: bold;
+            color: var(--color-qi);
+            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif; /* 移除鋸齒 */
+            text-shadow: 0 0 10px rgba(126, 231, 135, 0.3); /* 增加質感 */
+        }
+
+        /* [修正 2] 自定義 Select 箭頭位置 */
+        .custom-select {
+            width: 100%;
+            padding: 10px 12px;
+            background-color: #0d1117;
+            border: 1px solid var(--border-color);
             color: white;
-            padding: 10px;
-            margin-left: -20px;
-			white-space: nowrap; /* 保持 label 內容不斷行 */
+            border-radius: 4px;
+            margin-top: 5px;
+            font-size: 0.9em;
+            cursor: pointer;
+            
+            /* 隱藏預設箭頭 */
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            
+            /* 使用 SVG 自定義箭頭 */
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238b949e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center; /* 讓箭頭離右邊 12px */
+            background-size: 16px;
+            padding-right: 40px; /* 防止文字蓋到箭頭 */
         }
+        .custom-select:hover { border-color: var(--text-dim); }
+        .custom-select:focus { outline: none; border-color: var(--color-qi); }
 
-        label {
-            font-size: 1.5em;
-            margin-bottom: 10px;
-			display: block;
-			white-space: nowrap; /* 保持 label 內容不斷行 */
-        }
-
-       
+        .combat-avatar { font-size: 4em; margin-bottom: 10px; animation: bounce 2s infinite; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        .float-text { position: absolute; font-weight: bold; pointer-events: none; animation: floatUp 0.8s forwards; z-index: 1000; text-shadow: 1px 1px 2px black; }
+        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-30px) scale(1.2); } }
     </style>
 </head>
 <body>
-<!--     <div id="timezone"></div> -->
-    <div id="currentTime"></div>
 
-    <label for="timezoneSelect">選擇時區：</label>
-    <select id="timezoneSelect" onchange="updateTimezone(this.value)">
-        <option value="America/Los_Angeles" data-offset="-8">美國西部時間 (UTC-8)</option>
-        <option value="America/Chicago" data-offset="-6">美國中部時間 (UTC-6)</option>
-        <option value="America/New_York" data-offset="-5">美國東部時間 (UTC-5)</option>
-        <option value="Europe/London" data-offset="0">英國時間 (UTC+0)</option>
-        <option value="Asia/Taipei" selected data-offset="8">台北時間 (UTC+8)</option>
-        <option value="Asia/Tokyo" data-offset="9">日本時間 (UTC+9)</option>
-    </select>
+<div class="game-app">
+    <header>
+        <h3 style="margin:0; font-weight:600; letter-spacing:1px;">道友請留步</h3>
+        <span class="realm-badge" id="realm-badge">凡人</span>
+    </header>
 
-    <div id="countdown"></div>
-    <div id="dragonText"></div>
-    <div id="elderText"></div>
-	
-	<!-- 直接設定下載按鈕的 href 為檔案的 Raw URL -->
-	<a id="downloadButton" href="https://raw.githubusercontent.com/sfvskof2012/sfvskof2012.github.io/sfvskof2012/dragonclock_ver0.5.rar" download="dragonclock_ver0.5.rar">點我下載視窗版</a>	
+    <div class="nav-bar">
+        <div class="nav-item active" onclick="switchTab('home')">洞府</div>
+        <div class="nav-item" onclick="switchTab('shop')">坊市</div>
+        <div class="nav-item" onclick="switchTab('adventure')">歷練</div>
+        <div class="nav-item" onclick="switchTab('bag')">背包</div>
+    </div>
 
-    <div id="footer"><span>&copy;搶龍時鐘 ver 1.0.4 更新於: 2023/12/5 </span></div>
+    <div id="tab-home" class="content-area panel active">
+        <div id="meditate-status" style="text-align:center; color:var(--color-mp); font-size:0.9em; margin-bottom:10px; display:none;">
+            🧘 正在運功調息，氣血真元快速恢復中...
+        </div>
 
-    <script>
-        let selectedTimezone = "Asia/Taipei";
+        <div class="status-group">
+            <div class="status-row">
+                <span class="status-label">氣血 HP <span id="rate-hp" class="rate-tag c-hp"></span></span>
+                <span class="status-val" id="hp-val">100/100</span>
+            </div>
+            <div class="progress-track"><div class="progress-bar bg-hp" id="hp-bar"></div></div>
+        </div>
 
-        function updateTime() {
-            const now = new Date();
-			now.setMilliseconds(now.getMilliseconds() - 500);
-            const options = { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: selectedTimezone };
-            const timeString = now.toLocaleTimeString('en-US', options);
+        <div class="status-group">
+            <div class="status-row">
+                <span class="status-label">真元 MP <span id="rate-mp" class="rate-tag c-mp"></span></span>
+                <span class="status-val" id="mp-val">50/50</span>
+            </div>
+            <div class="progress-track"><div class="progress-bar bg-mp" id="mp-bar"></div></div>
+        </div>
 
-            const isMorningFiveUTC = now.getUTCHours() === 5;
-            const isMorningElevenUTC = now.getUTCHours() === 11;
-            const isAfternoonFiveUTC = now.getUTCHours() === 17;
-            const isEveningElevenUTC = now.getUTCHours() === 23;
+        <div class="status-group">
+            <div class="status-row">
+                <span class="status-label">修為 EXP <span id="rate-qi" class="rate-tag c-qi"></span></span>
+                <span class="status-val" id="qi-val">0/100</span>
+            </div>
+            <div class="progress-track"><div class="progress-bar bg-qi" id="qi-bar"></div></div>
+        </div>
 
+        <div class="stat-card">
+            <div class="stat-item"><span>攻擊力</span><strong id="atk-disp">10</strong></div>
+            <div class="stat-item"><span>防禦力</span><strong id="def-disp">2</strong></div>
+            <div class="stat-item"><span>靈石</span><strong id="gold-disp" style="color:var(--color-gold)">0</strong></div>
+        </div>
 
-            const offset = parseInt(document.getElementById('timezoneSelect').selectedOptions[0].getAttribute('data-offset'));
-            const timezoneOffsetString = offset >= 0 ? `+${offset}` : offset;
+        <div style="display:grid; gap:10px;">
+            <button class="btn btn-meditate" id="btn-meditate" onclick="toggleMeditate()">
+                <span>🧘</span> 開始打坐調息
+            </button>
+            
+            <button class="btn btn-cultivate" id="btn-cultivate" onclick="clickCultivate(event)">
+                <span>⚡</span> 點擊修煉 (獲取修為)
+            </button>
+            
+            <button class="btn btn-break" id="btn-breakthrough" style="display:none;" onclick="openBreakModal()">
+                <span>🔥</span> 境界突破
+            </button>
+        </div>
+    </div>
 
-            // document.getElementById('timezone').innerHTML = `時區：${selectedTimezone} (UTC${timezoneOffsetString})`;
-            document.getElementById('currentTime').innerHTML = `${timeString}`;
+    <div id="tab-shop" class="content-area panel">
+        <div style="text-align:center; margin-bottom:15px; font-size:0.9em; color:var(--text-dim);">
+            持有靈石：<span id="shop-gold" style="color:var(--color-gold); font-weight:bold; font-size:1.1em;">0</span>
+        </div>
+        <div class="shop-grid" id="shop-container"></div>
+    </div>
 
-            // 計算距離下一個時刻的倒計時
-            const minutes = now.getMinutes();
-            const seconds = now.getSeconds();
-            let countdownSeconds;
+    <div id="tab-adventure" class="content-area panel">
+        <div style="text-align:center; padding:30px 0; color:var(--text-dim);">
+            <div style="font-size:3em; margin-bottom:10px;">🌲</div>
+            <h3>迷霧森林</h3>
+            <p>妖獸出沒，請多加小心。</p>
+        </div>
+        <button class="btn btn-primary" onclick="explore()">開始探索</button>
+    </div>
 
-	    if ((isMorningFiveUTC || isMorningElevenUTC || isAfternoonFiveUTC || isEveningElevenUTC) && minutes < 15) {
+    <div id="tab-bag" class="content-area panel">
+        <div id="bag-list" style="display:grid; gap:10px;">
+            <div style="text-align:center; padding:20px; color:var(--text-dim);">背包空空如也</div>
+        </div>
+    </div>
 
-            document.getElementById('elderText').innerHTML = '窮老頭來了，快去抽獎，祝好運!!!';
-            document.getElementById('elderText').style.opacity = 1;
-			let titletext = "";
+    <div class="log-container" id="game-log"></div>
 
-            } else {
+    <div id="break-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 style="color:var(--color-qi);">⚡ 渡劫突破 ⚡</h3>
+            <p style="font-size:0.9em; color:var(--text-dim);">目標境界：<span id="target-realm"></span></p>
+            
+            <div class="circle-wrap">
+                <svg viewBox="0 0 36 36" class="circular-chart">
+                    <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path id="circle-path" class="circle" stroke-dasharray="80, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                </svg>
+                <div class="percentage-text" id="success-rate-text">80%</div>
+            </div>
+            
+            <div style="margin-bottom:20px; text-align:left;">
+                <label style="font-size:0.8em; color:var(--text-dim);">輔助丹藥</label>
+                <select id="break-item-select" class="custom-select" onchange="updateRate()">
+                    <option value="">不使用</option>
+                </select>
+                <div id="pill-desc" style="font-size:0.75em; color:var(--color-mp); margin-top:4px; height:1.2em;"></div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <button class="btn" onclick="closeBreakModal()">放棄</button>
+                <button class="btn btn-primary" onclick="doBreakthrough()">開始</button>
+            </div>
+        </div>
+    </div>
 
-            document.getElementById('elderText').style.opacity = 0;
+    <div id="combat-modal" class="modal-overlay">
+        <div class="modal-content" style="max-width:360px;">
+            <div class="combat-avatar" id="mob-icon"></div>
+            <h3 id="mob-name"></h3>
+            <div class="progress-track" style="background:#333; height:12px; margin:10px 0;">
+                <div class="progress-bar" id="mob-hp-bar" style="background:var(--color-hp); width:100%;"></div>
+            </div>
+            <div style="font-size:0.8em; color:var(--text-dim); margin-bottom:20px;">HP: <span id="mob-hp-text"></span></div>
+            <div style="display:flex; gap:10px; margin-bottom:15px;">
+                <div style="flex:1"><div class="progress-track"><div class="progress-bar bg-hp" id="c-hp-bar" style="width:100%"></div></div></div>
+                <div style="flex:1"><div class="progress-track"><div class="progress-bar bg-mp" id="c-mp-bar" style="width:100%"></div></div></div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                <button class="btn" onclick="combatAction('attack')">普攻</button>
+                <button class="btn" onclick="combatAction('skill1')">掌心雷 <span style="font-size:0.7em; color:var(--color-mp);">-20</span></button>
+                <button class="btn" onclick="combatAction('skill2')">回春術 <span style="font-size:0.7em; color:var(--color-mp);">-30</span></button>
+                <button class="btn btn-danger" onclick="flee()">逃跑</button>
+            </div>
+            <div id="combat-msg" style="margin-top:15px; font-size:0.8em; height:1.5em; color:var(--color-gold);"></div>
+        </div>
+    </div>
+</div>
 
+<script>
+    // === Game Data ===
+    const game = { 
+        qi: 0, maxQi: 100, hp: 100, maxHp: 100, mp: 50, maxMp: 50, realmIdx: 0, gold: 20, items: {}, 
+        fighting: false,
+        meditating: false // 新增打坐狀態
+    };
+
+    const realms = [
+        { name: "凡人", maxQi: 100, hp: 100, mp: 50, atk: 8, def: 1, regen: 0.5, rate: 1.0, clickExp: 2 },
+        { name: "練氣一層", maxQi: 200, hp: 150, mp: 80, atk: 15, def: 3, regen: 1.0, rate: 0.9, clickExp: 4 },
+        { name: "練氣二層", maxQi: 400, hp: 250, mp: 120, atk: 25, def: 6, regen: 1.5, rate: 0.8, clickExp: 6 },
+        { name: "練氣三層", maxQi: 800, hp: 400, mp: 180, atk: 40, def: 10, regen: 2.0, rate: 0.7, clickExp: 8 },
+        { name: "築基期", maxQi: 2000, hp: 1200, mp: 600, atk: 120, def: 40, regen: 5.0, rate: 0.5, clickExp: 20 }
+    ];
+
+    const shopDB = [
+        { id: 'hp_pill', name: '回春丹', price: 10, icon: '💊', desc: '回復 50 氣血', type: 'use', val: 50 },
+        { id: 'mp_pill', name: '聚氣散', price: 15, icon: '🧪', desc: '回復 40 真元', type: 'use', val: 40 },
+        { id: 'break_1', name: '破境丹', price: 50, icon: '🔮', desc: '突破機率 +20%', type: 'break', val: 0.2 },
+        { id: 'break_2', name: '護脈丹', price: 100, icon: '⚜️', desc: '突破機率 +35%', type: 'break', val: 0.35 }
+    ];
+
+    const mobs = [
+        { name: "狂暴野豬", icon:"🐗", hp:60, max:60, atk:12, def:2, exp:15, gold:3 },
+        { name: "劇毒青蛇", icon:"🐍", hp:80, max:80, atk:18, def:4, exp:25, gold:5 },
+        { name: "食人花", icon:"🌺", hp:150, max:150, atk:25, def:5, exp:50, gold:8 }
+    ];
+
+    let curMob = null;
+
+    function init() {
+        renderShop();
+        log("歡迎來到修仙界，請點擊修煉累積修為。");
+        setInterval(gameTick, 1000);
+    }
+
+    // === 核心循環 (Logic Update) ===
+    function gameTick() {
+        if (game.fighting) return; // 戰鬥中不執行掛機回復
+
+        const r = realms[game.realmIdx];
+
+        if (game.meditating) {
+            // [打坐模式]：HP/MP 快速恢復 (5倍)，修為停止
+            game.hp = Math.min(game.hp + r.regen * 5, game.maxHp);
+            game.mp = Math.min(game.mp + r.regen * 5, game.maxMp);
+            
+            // [自動關閉] 滿血滿魔後自動停止打坐
+            if (game.hp >= game.maxHp && game.mp >= game.maxMp) {
+                toggleMeditate(); // 關閉
+                log("氣血真元已盈滿，結束打坐，繼續修煉。", "info");
             }
+        } else {
+            // [正常模式]：HP/MP 正常恢復，修為緩慢增長
+            game.hp = Math.min(game.hp + r.regen, game.maxHp);
+            game.mp = Math.min(game.mp + r.regen, game.maxMp);
+            if (game.qi < game.maxQi) game.qi = Math.min(game.qi + r.regen, game.maxQi);
+        }
+        
+        updateUI();
+    }
 
+    // === 打坐切換功能 ===
+    function toggleMeditate() {
+        game.meditating = !game.meditating;
+        updateUI();
+    }
 
-         
-            if (minutes % 3 === 2 && seconds >= 50) {
-                countdownSeconds = 60 - seconds;
-                document.getElementById('dragonText').innerHTML = '快點抓龍!!!!!';				
-				document.getElementById('dragonText').classList.add('flashing'); // Add flashing effect
-                document.getElementById('dragonText').style.opacity = 1;
-				
-                // 計算動態字體大小             
-				const maxFontSize = 30; // 最大字體大小
-				const minFontSize = 14; // 最小字體大小
-				const fontSizePercentage = 2 - countdownSeconds / 10; // 根據倒數時間的一部分來計算百分比
-				const fontSize = `${minFontSize + fontSizePercentage * (maxFontSize - minFontSize)}px`;
-                document.getElementById('dragonText').style.fontSize = fontSize;
-				titletext = "只剩下"
-            } else {
-			
-                const nextDragonMinute = (Math.floor(minutes / 3) + 1) * 3;
-                countdownSeconds = (nextDragonMinute - minutes) * 60 - seconds;
-                document.getElementById('dragonText').style.opacity = 0;
-                document.getElementById('dragonText').style.fontSize = '2em'; // 非倒數時的字體大小
-				titletext = "搶龍時間"
+    // === UI Render ===
+    function updateUI() {
+        const r = realms[game.realmIdx];
+        
+        document.getElementById('realm-badge').innerText = r.name;
+        
+        // 更新速率顯示
+        if(document.getElementById('rate-hp')) {
+            // 如果在打坐，顯示加速後的速率
+            const currentRate = game.meditating ? (r.regen * 5) : r.regen;
+            const qiRate = game.meditating ? 0 : r.regen; // 打坐時修為速率為 0
+
+            document.getElementById('rate-hp').innerText = `(+${currentRate}/s)`;
+            document.getElementById('rate-mp').innerText = `(+${currentRate}/s)`;
+            document.getElementById('rate-qi').innerText = `(+${qiRate}/s)`;
+        }
+
+        setBar('hp', game.hp, game.maxHp);
+        setBar('mp', game.mp, game.maxMp);
+        setBar('qi', game.qi, game.maxQi);
+
+        document.getElementById('atk-disp').innerText = r.atk;
+        document.getElementById('def-disp').innerText = r.def;
+        document.getElementById('gold-disp').innerText = game.gold;
+        document.getElementById('shop-gold').innerText = game.gold;
+
+        // 打坐狀態 UI 變化
+        const btnMed = document.getElementById('btn-meditate');
+        const btnCultivate = document.getElementById('btn-cultivate');
+        const statusText = document.getElementById('meditate-status');
+
+        if (game.meditating) {
+            btnMed.innerHTML = "<span>🛑</span> 停止打坐";
+            btnMed.classList.add('active');
+            statusText.style.display = 'block';
+            btnCultivate.disabled = true; // 打坐時禁止點擊修煉
+            btnCultivate.innerHTML = "<span>🧘</span> 專心調息中...";
+            btnCultivate.style.opacity = "0.5";
+        } else {
+            btnMed.innerHTML = "<span>🧘</span> 開始打坐調息";
+            btnMed.classList.remove('active');
+            statusText.style.display = 'none';
+            btnCultivate.disabled = false;
+            btnCultivate.innerHTML = "<span>⚡</span> 點擊修煉 (獲取修為)";
+            btnCultivate.style.opacity = "1";
+        }
+
+        // 突破按鈕邏輯
+        const btnBreak = document.getElementById('btn-breakthrough');
+        if (game.qi >= game.maxQi && !game.meditating) {
+            btnBreak.style.display = 'flex';
+            btnCultivate.style.display = 'none'; 
+            document.getElementById('qi-bar').style.background = '#e3b341';
+        } else {
+            btnBreak.style.display = 'none';
+            if (!game.meditating) btnCultivate.style.display = 'flex';
+            document.getElementById('qi-bar').style.background = 'var(--color-qi)';
+        }
+    }
+
+    function setBar(type, val, max) {
+        const pct = (val / max) * 100;
+        document.getElementById(`${type}-bar`).style.width = pct + "%";
+        document.getElementById(`${type}-val`).innerText = `${Math.floor(val)}/${max}`;
+    }
+
+    function log(msg, type='') {
+        const box = document.getElementById('game-log');
+        const line = document.createElement('div');
+        line.className = 'log-line ' + (type === 'warn' ? 'log-danger' : (type === 'gold' ? 'log-highlight' : (type === 'exp' ? 'log-exp' : (type === 'info' ? 'log-info' : ''))));
+        const time = new Date().toLocaleTimeString('en-US', {hour12:false, hour:"2-digit", minute:"2-digit", second:"2-digit"});
+        line.innerHTML = `<span style="opacity:0.5">[${time}]</span> ${msg}`;
+        box.prepend(line);
+    }
+
+    function switchTab(id) {
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        document.getElementById('tab-' + id).classList.add('active');
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+        if(id === 'bag') renderBag();
+    }
+
+    // === 點擊修煉 ===
+    function clickCultivate(e) {
+        if (game.meditating) return; // 打坐中無法點擊
+
+        const r = realms[game.realmIdx];
+        game.qi = Math.min(game.qi + r.clickExp, game.maxQi);
+        game.hp = Math.min(game.hp + r.regen * 2, game.maxHp);
+        game.mp = Math.min(game.mp + r.regen * 2, game.maxMp);
+        showFloatText(e.clientX, e.clientY, `修為 +${r.clickExp}`, '#7ee787');
+        updateUI();
+    }
+
+    function showFloatText(x, y, text, color) {
+        const el = document.createElement('div');
+        el.className = 'float-text';
+        el.innerText = text;
+        el.style.color = color;
+        el.style.left = x + 'px';
+        el.style.top = (y - 20) + 'px';
+        document.body.appendChild(el);
+        setTimeout(() => { el.remove(); }, 800);
+    }
+
+    // === Shop & Bag ===
+    function renderShop() {
+        const con = document.getElementById('shop-container');
+        con.innerHTML = shopDB.map(item => `
+            <div class="shop-card">
+                <div><div class="shop-icon">${item.icon}</div><div class="shop-name">${item.name}</div><div class="shop-desc">${item.desc}</div></div>
+                <div><div class="shop-price">$${item.price}</div><button class="btn btn-primary" style="padding:6px;" onclick="buy('${item.id}')">購買</button></div>
+            </div>`).join('');
+    }
+
+    function buy(id) {
+        const item = shopDB.find(i => i.id === id);
+        if (game.gold >= item.price) {
+            game.gold -= item.price;
+            game.items[id] = (game.items[id] || 0) + 1;
+            log(`購買了 ${item.name}`, 'gold');
+            updateUI();
+        } else log("靈石不足！", 'warn');
+    }
+
+    function renderBag() {
+        const list = document.getElementById('bag-list');
+        const items = Object.keys(game.items).filter(k => game.items[k] > 0);
+        if (items.length === 0) { list.innerHTML = `<div style="text-align:center; padding:20px; color:#555;">背包空空如也</div>`; return; }
+        list.innerHTML = items.map(k => {
+            const data = shopDB.find(i => i.id === k);
+            return `<div class="bag-item"><div style="display:flex; align-items:center; gap:10px;"><span style="font-size:1.5em">${data.icon}</span><div><div style="font-weight:bold; color:var(--text-main)">${data.name}</div><div style="font-size:0.8em; color:var(--text-dim)">持有: ${game.items[k]}</div></div></div>${data.type === 'use' ? `<button class="btn" style="width:auto; padding:6px 12px;" onclick="useItem('${k}')">使用</button>` : ''}</div>`;
+        }).join('');
+    }
+
+    function useItem(id) {
+        const item = shopDB.find(i => i.id === id);
+        if (game.items[id] > 0) {
+            game.items[id]--;
+            if (id === 'hp_pill') game.hp = Math.min(game.hp + 50, game.maxHp);
+            if (id === 'mp_pill') game.mp = Math.min(game.mp + 40, game.maxMp);
+            log(`使用了 ${item.name}`);
+            renderBag(); updateUI();
+        }
+    }
+
+    // === Actions ===
+    function explore() {
+        if(game.hp < 20) { log("氣血不足，請先打坐調息！", "warn"); return; }
+        log("進入迷霧森林探索...");
+        setTimeout(() => {
+            if(Math.random() < 0.6) { startCombat(); } else {
+                const g = Math.floor(Math.random() * 5) + 2;
+                game.gold += g;
+                log(`發現了一些靈石 (+$${g})`, 'gold');
+                updateUI();
             }
+        }, 600);
+    }
 
-            const countdownMinutes = Math.floor(countdownSeconds / 60);
-            const countdownSecondsDisplay = countdownSeconds % 60;
-            const countdownString = `${countdownMinutes}:${countdownSecondsDisplay < 10 ? '0' : ''}${countdownSecondsDisplay}`;
-            document.getElementById('countdown').innerHTML = `距離搶龍時間：${countdownString}`;
-			document.title = titletext + ": " + countdownString;
+    function openBreakModal() {
+        document.getElementById('break-modal').style.display = 'flex';
+        const next = realms[game.realmIdx + 1];
+        if(!next) return;
+        document.getElementById('target-realm').innerText = next.name;
+        const sel = document.getElementById('break-item-select');
+        sel.innerHTML = '<option value="">不使用</option>';
+        Object.keys(game.items).forEach(k => {
+            const d = shopDB.find(i => i.id === k);
+            if(d.type === 'break' && game.items[k] > 0) sel.innerHTML += `<option value="${k}">${d.name} (+${d.val*100}%)</option>`;
+        });
+        updateRate();
+    }
+
+    // === 更新 SVG 圓環進度 ===
+    function updateRate() {
+        const next = realms[game.realmIdx + 1]; 
+        let r = next.rate; 
+        const val = document.getElementById('break-item-select').value;
+        
+        if(val) { 
+            const item = shopDB.find(i => i.id === val); 
+            r += item.val; 
+            document.getElementById('pill-desc').innerText = item.desc; 
+        } else { 
+            document.getElementById('pill-desc').innerText = ""; 
         }
-		
-        function updateTimezone(newTimezone) {
-            selectedTimezone = newTimezone;
-            updateTime();
+        
+        const finalRate = Math.min(r, 1);
+        document.getElementById('success-rate-text').innerText = Math.floor(finalRate * 100) + "%";
+        
+        // 更新 SVG 的 stroke-dasharray (max 100)
+        const circlePath = document.getElementById('circle-path');
+        const dashVal = finalRate * 100;
+        circlePath.setAttribute('stroke-dasharray', `${dashVal}, 100`);
+        
+        // 變色邏輯 (大於80%綠色，大於50%黃色，否則紅色)
+        circlePath.style.stroke = finalRate >= 0.8 ? 'var(--color-qi)' : (finalRate >= 0.5 ? '#e3b341' : '#ff7b72');
+    }
+
+    function closeBreakModal() { document.getElementById('break-modal').style.display = 'none'; }
+
+    function doBreakthrough() {
+        const next = realms[game.realmIdx + 1];
+        let r = next.rate;
+        const sel = document.getElementById('break-item-select');
+        if(sel.value) { const item = shopDB.find(i => i.id === sel.value); r += item.val; game.items[sel.value]--; }
+
+        if(Math.random() < r) {
+            game.realmIdx++;
+            const nr = realms[game.realmIdx];
+            game.qi = 0; game.maxQi = nr.maxQi; game.hp = nr.hp; game.maxHp = nr.hp; game.mp = nr.mp; game.maxMp = nr.mp;
+            log(`突破成功！晉升為 [${nr.name}]`, 'gold');
+        } else {
+            game.hp = 1; game.qi = Math.floor(game.maxQi * 0.7);
+            log("突破失敗！遭受雷劫重傷。", 'warn');
+        }
+        closeBreakModal(); updateUI();
+    }
+
+    // === Combat ===
+    function startCombat() {
+        const m = mobs[Math.floor(Math.random() * mobs.length)];
+        curMob = { ...m };
+        game.fighting = true;
+        document.getElementById('combat-modal').style.display = 'flex';
+        document.getElementById('mob-name').innerText = curMob.name;
+        document.getElementById('mob-icon').innerText = curMob.icon;
+        document.getElementById('mob-hp-text').innerText = curMob.hp;
+        document.getElementById('mob-hp-bar').style.width = '100%';
+        document.getElementById('combat-msg').innerText = "遭遇敵人！";
+        updateCombatStats();
+    }
+
+    function updateCombatStats() {
+        document.getElementById('c-hp-bar').style.width = (game.hp / game.maxHp * 100) + "%";
+        document.getElementById('c-mp-bar').style.width = (game.mp / game.maxMp * 100) + "%";
+    }
+
+    function combatAction(act) {
+        if(!game.fighting) return;
+        const r = realms[game.realmIdx];
+        let dmg = 0; let msg = "";
+
+        if(act === 'attack') { dmg = Math.max(1, r.atk - curMob.def); msg = `普攻造成 ${dmg} 傷害`; } 
+        else if(act === 'skill1') { if(game.mp < 20) { msg = "真元不足"; } else { game.mp -= 20; dmg = Math.max(1, r.atk * 2.5 - curMob.def); msg = `掌心雷造成 ${dmg} 傷害`; } } 
+        else if(act === 'skill2') { if(game.mp < 30) { msg = "真元不足"; } else { game.mp -= 30; game.hp = Math.min(game.hp + r.atk * 3, game.maxHp); msg = "恢復了氣血"; updateCombatStats(); } }
+
+        document.getElementById('combat-msg').innerText = msg;
+        if(dmg > 0) {
+            curMob.hp -= dmg;
+            document.getElementById('mob-hp-bar').style.width = (curMob.hp / curMob.max * 100) + "%";
+            document.getElementById('mob-hp-text').innerText = curMob.hp;
         }
 
-        // 根據 option 的 data-offset 屬性排序時區
-        const select = document.getElementById('timezoneSelect');
-        Array.from(select.options)
-            .sort((a, b) => parseInt(a.getAttribute('data-offset')) - parseInt(b.getAttribute('data-offset')))
-            .forEach(option => select.add(option));
+        if(curMob.hp <= 0) {
+            game.gold += curMob.gold;
+            game.qi = Math.min(game.qi + curMob.exp, game.maxQi);
+            log(`戰勝 ${curMob.name}，獲得 $${curMob.gold}，修為 +${curMob.exp}`, 'exp');
+            endCombat();
+        } else {
+            setTimeout(() => {
+                if(!game.fighting) return;
+                const edmg = Math.max(1, curMob.atk - r.def);
+                game.hp -= edmg;
+                updateCombatStats();
+                
+                // [重傷自動打坐邏輯]
+                if(game.hp <= 0) { 
+                    game.hp = 1; 
+                    log("不敵對手，重傷倒地！自動進入打坐調息狀態...", "warn"); 
+                    endCombat();
+                    if(!game.meditating) toggleMeditate(); // 強制開啟打坐
+                }
+            }, 300);
+        }
+        updateCombatStats();
+    }
 
-        setInterval(updateTime, 10);
-        updateTime();
-    </script>
+    function flee() { log("逃跑成功"); endCombat(); }
+    function endCombat() { game.fighting = false; document.getElementById('combat-modal').style.display = 'none'; updateUI(); }
+
+    init();
+</script>
+
 </body>
 </html>
