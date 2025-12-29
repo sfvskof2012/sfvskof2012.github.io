@@ -20,13 +20,8 @@ body {
     font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
     background-color: var(--bg-color);
     color: var(--text-main);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    margin: 0;
-    user-select: none;
-    overflow: hidden; 
+    display: flex; justify-content: center; align-items: center;
+    min-height: 100vh; margin: 0; user-select: none; overflow: hidden; 
 }
 
 /* 捲動條美化 */
@@ -36,17 +31,10 @@ body {
 ::-webkit-scrollbar-thumb:hover { background: #8b949e; }
 
 .game-app {
-    width: 100%;
-    max-width: 480px;
-    height: 90vh;
-    background-color: var(--panel-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.5);
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
+    width: 100%; max-width: 480px; height: 90vh;
+    background-color: var(--panel-bg); border: 1px solid var(--border-color);
+    border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+    position: relative; display: flex; flex-direction: column; overflow: hidden;
 }
 
 header { padding: 15px; text-align: center; border-bottom: 1px solid var(--border-color); background: rgba(22, 27, 34, 0.95); }
@@ -66,10 +54,7 @@ header { padding: 15px; text-align: center; border-bottom: 1px solid var(--borde
 .status-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 6px; }
 .status-label { font-size: 0.85em; font-weight: 600; color: var(--text-dim); }
 .rate-tag { font-size: 0.85em; font-weight: normal; margin-left: 6px; opacity: 0.8; font-family: monospace; }
-.c-hp { color: var(--color-hp); }
-.c-mp { color: var(--color-mp); }
-.c-qi { color: var(--color-qi); }
-
+.c-hp { color: var(--color-hp); } .c-mp { color: var(--color-mp); } .c-qi { color: var(--color-qi); }
 .status-val { font-size: 0.8em; color: var(--text-dim); font-family: monospace; }
 .progress-track { height: 8px; background: #000; border-radius: 4px; overflow: hidden; }
 .progress-bar { height: 100%; width: 0%; transition: width 0.2s linear; border-radius: 4px;}
@@ -85,13 +70,10 @@ header { padding: 15px; text-align: center; border-bottom: 1px solid var(--borde
 .btn:hover { background: #30363d; transform: translateY(-1px); }
 .btn:active { transform: translateY(0); background: #161b22;}
 .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
 .btn-primary { background: #238636; border-color: rgba(240,246,252,0.1); color: #fff; }
 .btn-primary:hover { background: #2ea043; }
-
 .btn-break { background: #238636; color: white; border: none; box-shadow: 0 4px 12px rgba(46, 160, 67, 0.4); animation: pulse-green 2s infinite; }
 @keyframes pulse-green { 0% { box-shadow: 0 0 0 0 rgba(46, 160, 67, 0.4); } 70% { box-shadow: 0 0 0 6px rgba(46, 160, 67, 0); } 100% { box-shadow: 0 0 0 0 rgba(46, 160, 67, 0); } }
-
 .btn-danger { background: rgba(218, 54, 51, 0.1); color: var(--color-hp); border-color: rgba(248, 81, 73, 0.4); }
 .btn-cultivate { border-color: var(--color-qi); color: var(--color-qi); background: rgba(126, 231, 135, 0.05); }
 .btn-cultivate:hover { background: rgba(126, 231, 135, 0.15); }
@@ -113,39 +95,42 @@ header { padding: 15px; text-align: center; border-bottom: 1px solid var(--borde
 }
 .log-line { margin-bottom: 4px; color: var(--text-dim); }
 .log-highlight { color: var(--color-gold); } .log-exp { color: var(--color-qi); } .log-danger { color: var(--color-hp); } .log-info { color: var(--color-mp); }
+.log-dim { color: #555; }
+
+/* 地圖卡片樣式 */
+.map-card {
+    background: #21262d;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: 0.2s;
+}
+.map-info h4 { margin: 0 0 5px 0; color: var(--text-main); }
+.map-info p { margin: 0; font-size: 0.8em; color: var(--text-dim); }
+.map-req { font-size: 0.75em; margin-top: 5px; color: var(--color-hp); }
+.map-req.ok { color: var(--color-qi); }
+
+/* 鎖住的地圖 */
+.map-card.locked { opacity: 0.5; border-color: #333; }
+.map-card.active { border-color: var(--color-qi); box-shadow: 0 0 10px rgba(126, 231, 135, 0.1); }
 
 .modal-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(13, 17, 23, 0.95); backdrop-filter: blur(5px); z-index: 99; display: none; justify-content: center; align-items: center; }
 .modal-content { background: #161b22; border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; width: 85%; max-width: 320px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); text-align: center; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-/* SVG 圓形進度條 */
+/* SVG */
 .circle-wrap { position: relative; width: 100px; height: 100px; margin: 20px auto; }
 .circular-chart { display: block; margin: 0 auto; max-width: 100%; max-height: 100%; }
 .circle-bg { fill: none; stroke: #30363d; stroke-width: 2.5; }
-.circle {
-    fill: none; stroke: var(--color-qi); stroke-width: 2.5; stroke-linecap: round;
-    animation: progress 1s ease-out forwards; transition: stroke-dasharray 0.3s, stroke 0.3s;
-}
-.percentage-text {
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    font-size: 1.5em; font-weight: bold; color: var(--color-qi);
-    font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
-    text-shadow: 0 0 10px rgba(126, 231, 135, 0.3);
-}
-
-.custom-select {
-    width: 100%; padding: 10px 12px; background-color: #0d1117; border: 1px solid var(--border-color); color: white; border-radius: 4px; margin-top: 5px; font-size: 0.9em; cursor: pointer;
-    appearance: none; -webkit-appearance: none; -moz-appearance: none;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238b949e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-    background-repeat: no-repeat; background-position: right 12px center; background-size: 16px; padding-right: 40px;
-}
-.custom-select:hover { border-color: var(--text-dim); }
-.custom-select:focus { outline: none; border-color: var(--color-qi); }
-
+.circle { fill: none; stroke: var(--color-qi); stroke-width: 2.5; stroke-linecap: round; animation: progress 1s ease-out forwards; transition: stroke-dasharray 0.3s, stroke 0.3s; }
+.percentage-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 1.5em; font-weight: bold; color: var(--color-qi); font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif; text-shadow: 0 0 10px rgba(126, 231, 135, 0.3); }
+.custom-select { width: 100%; padding: 10px 12px; background-color: #0d1117; border: 1px solid var(--border-color); color: white; border-radius: 4px; margin-top: 5px; font-size: 0.9em; cursor: pointer; appearance: none; -webkit-appearance: none; -moz-appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238b949e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 12px center; background-size: 16px; padding-right: 40px; }
+.custom-select:hover { border-color: var(--text-dim); } .custom-select:focus { outline: none; border-color: var(--color-qi); }
 .combat-avatar { font-size: 4em; margin-bottom: 10px; animation: bounce 2s infinite; }
 @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 .float-text { position: absolute; font-weight: bold; pointer-events: none; animation: floatUp 0.8s forwards; z-index: 1000; text-shadow: 1px 1px 2px black; }
 @keyframes floatUp { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-30px) scale(1.2); } }
-
-/* 存檔通知 */
 #save-notice { position: absolute; top: 15px; right: 20px; font-size: 0.8em; color: var(--color-qi); opacity: 0; transition: opacity 0.5s; font-weight: bold;}

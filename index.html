@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>道友請留步 v1.3 - 永恆仙途</title>
+    <title>道友請留步 v1.5 - 大千世界</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -90,12 +90,8 @@
     </div>
 
     <div id="tab-adventure" class="content-area panel">
-        <div style="text-align:center; padding:30px 0; color:var(--text-dim);">
-            <div style="font-size:3em; margin-bottom:10px;">🌲</div>
-            <h3>迷霧森林</h3>
-            <p>妖獸出沒，請多加小心。</p>
-        </div>
-        <button class="btn btn-primary" onclick="explore()">開始探索</button>
+        <div id="map-list" style="display:grid; gap:12px;">
+            </div>
     </div>
 
     <div id="tab-bag" class="content-area panel">
@@ -108,7 +104,7 @@
 
     <div id="break-modal" class="modal-overlay">
         <div class="modal-content">
-            <h3 style="color:var(--color-qi);">⚡ 渡劫突破 ⚡</h3>
+            <h3 id="break-title" style="color:var(--color-qi);">⚡ 渡劫突破 ⚡</h3>
             <p style="font-size:0.9em; color:var(--text-dim);">目標境界：<span id="target-realm"></span></p>
             <div class="circle-wrap">
                 <svg viewBox="0 0 36 36" class="circular-chart">
@@ -117,7 +113,7 @@
                 </svg>
                 <div class="percentage-text" id="success-rate-text">80%</div>
             </div>
-            
+            <div id="bonus-info" style="font-size:0.8em; color:var(--color-gold); margin-bottom:10px; height:1.2em;"></div>
             <div style="margin-bottom:20px; text-align:left;">
                 <label style="font-size:0.8em; color:var(--text-dim);">輔助丹藥</label>
                 <select id="break-item-select" class="custom-select" onchange="updateRate()">
@@ -156,6 +152,5 @@
 </div>
 
 <script src="game.js"></script>
-
 </body>
 </html>
